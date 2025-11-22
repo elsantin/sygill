@@ -1,26 +1,163 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Dark mode colors with golden accents */
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    /* Golden accent color */
+    --primary: 45 93% 58%;
+    --primary-foreground: 240 5.9% 10%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 45 93% 58%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 45 93% 58%;
+    --radius: 0.5rem;
+    --font-heading: "Cinzel", serif;
+    --font-body: "Cormorant Garamond", serif;
+  }
+
+  .light {
+    /* Light mode colors with golden accents */
+    --background: 30 20% 92%;
+    --foreground: 240 10% 3.9%;
+    /* Subtle text shadow for better legibility/depth on light marble */
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+    --card: 30 20% 96%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 30 20% 96%;
+    --popover-foreground: 240 10% 3.9%;
+    /* Golden accent color - Darker for better contrast in light mode */
+    --primary: 35 90% 35%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 30 15% 85%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 30 15% 85%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 38 92% 50%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 30 20% 80%;
+    --input: 30 20% 80%;
+    --ring: 38 92% 50%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+
+    /* Footer Colors - Light Mode */
+    --color-dev-hub-bg: #fef9f5;
+    --color-dev-hub-surface: #ffffff;
+    --color-dev-hub-text-primary: #2a1f3d;
+    --color-dev-hub-text-secondary: #6b5a7d;
+    --color-dev-hub-border: #f0e6dc;
+    /* Footer Colors - Dark Mode */
+    --color-dev-hub-bg: #1a1625;
+    --color-dev-hub-surface: #241d30;
+    --color-dev-hub-text-primary: #e8dff5;
+    --color-dev-hub-text-secondary: #b8a8c9;
+    --color-dev-hub-border: #3d2f52;
+    --color-sunset-orange: #ff6b35;
+    --color-sunset-pink: #ff8c94;
+    --color-sunset-purple: #a06cd5;
+    --color-sunset-coral: #ff9a76;
+    --color-caribbean-turquoise: #1dd3b0;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: var(--font-body);
+    transition-property: color, background-color, border-color,
+      text-decoration-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 700ms;
+
+    /* Subtle marble texture background - very low opacity */
+    background-image: url("/dark-stone.png");
+    background-size: 600px 600px;
+    background-repeat: repeat;
+    background-blend-mode: overlay;
+    opacity: 1;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url("/dark-stone.png");
+    background-size: 600px 600px;
+    background-repeat: repeat;
+    opacity: 0.25;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  body.light {
+    background-image: url("/light-stone.png");
+    background-size: 600px 600px;
+  }
+
+  body.light::before {
+    background-image: url("/light-stone.png");
+    opacity: 0.25;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading);
+  }
+}
+
+/* Custom Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: hsl(45 93% 58% / 0.3);
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(45 93% 58% / 0.6);
+}
+
+/* Mist Effect */
+.mist-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 150px;
+  background: linear-gradient(
+    to top,
+    hsl(var(--background)) 0%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 10;
 }
