@@ -47,13 +47,13 @@ export default function Home() {
     setIsModalOpen(true);
   };
 
-  const handleNewEntry = () => {
+  const handleCreateConcept = () => {
     const newConcept: Concept = {
       id: uuidv4(),
-      term: "New Concept",
-      category: "General",
-      definition: "Write a short definition here...",
-      notes: "Add detailed notes here...",
+      term: "",
+      category: "",
+      definition: "",
+      notes: "",
       codeSnippet: "",
       mastered: false,
       favorite: false,
@@ -74,6 +74,25 @@ export default function Home() {
     }, 300);
   };
 
+  const handleNavigateConcept = (direction: "next" | "prev") => {
+    if (!activeConcept) return;
+
+    const currentIndex = filteredConcepts.findIndex(
+      (c) => c.id === activeConcept.id
+    );
+    if (currentIndex === -1) return;
+
+    let nextIndex: number;
+    if (direction === "next") {
+      nextIndex = (currentIndex + 1) % filteredConcepts.length;
+    } else {
+      nextIndex =
+        (currentIndex - 1 + filteredConcepts.length) % filteredConcepts.length;
+    }
+
+    setActiveConcept(filteredConcepts[nextIndex]);
+  };
+
   if (!isMounted) {
     return null;
   }
@@ -86,7 +105,7 @@ export default function Home() {
           <Button variant="outline" onClick={() => setIsStudyMode(true)}>
             <Feather className="mr-2 h-4 w-4" /> Study Mode
           </Button>
-          <Button onClick={handleNewEntry}>
+          <Button onClick={handleCreateConcept}>
             <Plus className="mr-2 h-4 w-4" /> New Entry
           </Button>
         </div>
@@ -134,6 +153,7 @@ export default function Home() {
             key={activeConcept.id}
             concept={activeConcept}
             onClose={handleCloseModal}
+            onNavigate={handleNavigateConcept}
             initialEditMode={isEditMode}
           />
         )}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useStore } from "@/store/useStore";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -22,25 +22,76 @@ export function FlashcardMode({ onClose }: FlashcardModeProps) {
 
   const currentConcept = shuffledConcepts[currentIndex];
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     setIsFlipped(false);
     setTimeout(() => {
       setCurrentIndex((prev) => (prev + 1) % shuffledConcepts.length);
     }, 300);
-  };
+  }, [shuffledConcepts.length]);
 
-  const handlePrev = () => {
+  const handlePrev = useCallback(() => {
     setIsFlipped(false);
     setTimeout(() => {
       setCurrentIndex(
         (prev) => (prev - 1 + shuffledConcepts.length) % shuffledConcepts.length
       );
     }, 300);
-  };
+  }, [shuffledConcepts.length]);
 
-  const handleFlip = () => {
+  const handleFlip = useCallback(() => {
     setIsFlipped(!isFlipped);
-  };
+  }, [isFlipped]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Escape to close
+      if (e.key === "Escape") {
+        onClose();
+        return;
+      }
+
+      // Arrow keys for navigation
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        handleNext();
+        return;
+      }
+
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        handlePrev();
+        return;
+      }
+
+      // Space to flip card
+      if (e.key === " " || e.key === "Spacebar") {
+        e.preventDefault();
+        handleFlip();
+        return;
+      }
+
+      // M to toggle mastery
+      if (e.key === "m" || e.key === "M") {
+        e.preventDefault();
+        if (currentConcept) {
+          toggleMastery(currentConcept.id);
+        }
+        return;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [
+    onClose,
+    currentConcept,
+    toggleMastery,
+    handleNext,
+    handlePrev,
+    handleFlip,
+  ]);
 
   if (!currentConcept) return null;
 

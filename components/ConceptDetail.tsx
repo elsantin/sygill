@@ -17,12 +17,14 @@ import { cn } from "@/lib/utils";
 interface ConceptDetailProps {
   concept: Concept;
   onClose: () => void;
+  onNavigate?: (direction: "next" | "prev") => void;
   initialEditMode?: boolean;
 }
 
 export function ConceptDetail({
   concept,
   onClose,
+  onNavigate,
   initialEditMode = false,
 }: ConceptDetailProps) {
   const {
@@ -58,6 +60,39 @@ export function ConceptDetail({
       };
     }
   }, [concept.mastered]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't handle keyboard shortcuts if we're editing
+      if (isEditing) return;
+
+      // Arrow keys for navigation
+      if ((e.key === "ArrowRight" || e.key === "ArrowLeft") && onNavigate) {
+        e.preventDefault();
+        onNavigate(e.key === "ArrowRight" ? "next" : "prev");
+        return;
+      }
+
+      // E to edit
+      if (e.key === "e" || e.key === "E") {
+        e.preventDefault();
+        setIsEditing(true);
+        return;
+      }
+
+      // S to toggle favorite (Star)
+      if (e.key === "s" || e.key === "S") {
+        e.preventDefault();
+        toggleFavorite(concept.id);
+        return;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isEditing, onNavigate, concept.id, toggleFavorite]);
 
   const handleSave = () => {
     updateConcept(concept.id, formData);

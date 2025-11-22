@@ -6,16 +6,44 @@ import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
 import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { SettingsModal } from "@/components/SettingsModal";
 
 export function Header() {
   const { concepts, searchQuery, setSearchQuery } = useStore();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const total = concepts.length;
   const mastered = concepts.filter((c) => c.mastered).length;
   const progress = total > 0 ? (mastered / total) * 100 : 0;
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl+K or Cmd+K to focus search
+      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        return;
+      }
+
+      // / to focus search (unless typing in an input)
+      if (
+        e.key === "/" &&
+        !(e.target instanceof HTMLInputElement) &&
+        !(e.target instanceof HTMLTextAreaElement)
+      ) {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        return;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/5 bg-background/80 backdrop-blur-md">
@@ -28,6 +56,7 @@ export function Header() {
         <div className="flex flex-1 items-center justify-end gap-4">
           <div className="w-full max-w-xs hidden sm:block">
             <Input
+              ref={searchInputRef}
               placeholder="Search concept..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
